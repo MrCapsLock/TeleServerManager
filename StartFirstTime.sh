@@ -14,6 +14,21 @@ function main {
     if [ "$createAdmin" ==  "y" ] || [ "$createAdmin" ==  "Y" ];then
       CreateAdmin;
     fi
+
+    runBot;
+}
+# ------------------------------------------------------------------------------------------------------
+function runBot {
+    ansCheck_='Y';
+    ansCheck='';
+    while [ "$ansCheck" != "y" ] && [ "$ansCheck" != "Y" ] && [ "$ansCheck" != "n" ] && [ "$ansCheck" != "N" ]
+    do
+        read -p "Do you want to run this bot with this Conf ? (Y|n) " ansCheck__;
+        ansCheck=${ansCheck__:-$ansCheck_};
+    done
+    if [ "$ansCheck" ==  "y" ] || [ "$ansCheck" ==  "Y" ];then
+        proxychains python3 bot/bot.py
+    fi
 }
 # ------------------------------------------------------------------------------------------------------
 function getToken {

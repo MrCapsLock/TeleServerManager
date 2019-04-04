@@ -14,17 +14,17 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 # ------------------------------------------------------------------------------------------------------
 # Configuration
 # Enable Logging
-# log_location = "logs/TeleBot.log"
-from TeleBot.stages import Stages
-from TeleBot.user import User
+# log_location = "logs/bot.log"
+from stages import Stages
+from user import User
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Configuring TeleBot
+# Configuring bot
 try:
     config = configparser.ConfigParser()
-    config.read_file(open('../config.ini'))
+    config.read_file(open('config.ini'))
 except IOError:
     logger.error("Cant Open The Config File !")
     exit(1)
@@ -70,5 +70,4 @@ def main():
 
 
 # ------------------------------------------------------------------------------------------------------
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__": main()
