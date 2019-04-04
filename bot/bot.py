@@ -3,22 +3,25 @@
 
 """
 TELEGRAM SERVER MANAGER BOT !
-
-License goes here !...
 """
 
 import logging
 import configparser
-from telegram.ext import Updater, CommandHandler
+
+from telegram import Bot, Update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 # ------------------------------------------------------------------------------------------------------
 # Configuration
 # Enable Logging
-log_location = "logs/bot.log"
-logging.basicConfig(filename=log_location, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+# log_location = "logs/TeleBot.log"
+from TeleBot.stages import Stages
+from TeleBot.user import User
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
-# Configuring bot
+
+# Configuring TeleBot
 try:
     config = configparser.ConfigParser()
     config.read_file(open('../config.ini'))
@@ -28,10 +31,21 @@ except IOError:
 
 
 # ------------------------------------------------------------------------------------------------------
-def start(bot, update):
-    chat_id = update.message.chat_id
-    bot.send_message(chat_id=chat_id, text="Hello dear")
-
+def start(bot: Bot, update: Update, **optional_args):
+    usr = User(update.message.from_user)
+    if usr.verify :
+        msg = "انتخاب کنید:"
+        bot.send_message(
+            chat_id=update.message.from_user.id,
+            text=msg,
+            reply_markup=Stages.main_menu()
+        )
+    else :
+        msg = "متاسفانه این بات تنها برای افراد خاص قابل دسترس است."
+        bot.send_message(
+            chat_id=update.message.from_user.id,
+            text=msg,
+        )
 
 # ------------------------------------------------------------------------------------------------------
 def error(bot, update, error):
@@ -43,7 +57,13 @@ def main():
     logger.info("Bot Starts !")
     updater = Updater(config['DEFAULT']['token'])
     dp = updater.dispatcher
-    dp.add_handler(CommandHandler("start", start))
+
+    # Commands
+    dp.add_handler(CommandHandler("start", start, pass_user_data=True, pass_chat_data=True))
+
+    # Messages
+    updater.dispatcher.add_handler(MessageHandler(Filters.text, start, pass_user_data=True, pass_chat_data=True))
+
     dp.add_error_handler(error)
     updater.start_polling()
     updater.idle()
